@@ -14,11 +14,25 @@
 
 [Explain how to install all of the project's dependencies]
 
+Install the Rust programming language (see instructions at <https://rustup.rs>).
+
 ### Quickstart
+
+Clone the repo, and launch the following command:
+
+```bash
+cargo run -- arguments
+```
 
 [Explain how to run this project]
 
 ### Usage
+
+To run tests, launch the following command:
+
+```bash
+cargo test
+```
 
 [Explain how to use this project]
 
