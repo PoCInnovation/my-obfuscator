@@ -1,4 +1,5 @@
 use std::{env, io::Read};
+use rand::{Rng, distributions::DistString};
 
 use tree_sitter::{self, Parser, Tree, TreeCursor};
 
@@ -98,15 +99,7 @@ fn replace_fn(tree: &mut Tree, code: &str, replace: &str, replacement: &str) -> 
 const MAX_RANDOM_STRING_SIZE: usize = 200;
 
 fn rand_str() -> String {
-    let mut v = vec![1; MAX_RANDOM_STRING_SIZE];
-    let mut rand = std::fs::File::open("/dev/urandom").unwrap();
-    let _ = rand.read(&mut v);
-
-    String::from_utf8(v.into_iter().
-        filter(|x|
-            b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_0123456789".
-            contains(x))
-        .collect()).unwrap()
+    rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), rand::thread_rng().gen_range(10..30))
 }
 
 fn main() {
