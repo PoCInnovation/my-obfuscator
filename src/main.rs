@@ -1,16 +1,18 @@
-use std::{env, io::Read};
-use rand::{Rng, distributions::DistString};
+use std::env;
 
+use rand::{distributions::DistString, Rng};
 use tree_sitter::{self, Parser, Tree, TreeCursor};
 
 trait Shiftable {
-    fn shift(self, shift: i32) -> Self where Self : Sized;
+    fn shift(self, shift: i32) -> Self
+    where
+        Self: Sized;
 }
 
 impl Shiftable for std::ops::Range<usize> {
     fn shift(self, shift: i32) -> Self {
         let sign = shift < 0;
-        let shift : usize = shift.abs().try_into().unwrap();
+        let shift: usize = shift.abs().try_into().unwrap();
 
         if sign {
             (self.start - shift)..(self.end - shift)
@@ -20,9 +22,8 @@ impl Shiftable for std::ops::Range<usize> {
     }
 }
 
-fn get_fn(tree: &Tree, code: &str) -> Vec<String>
-{
-    fn go(cursor:&mut TreeCursor, code: &str, vec: &mut Vec<String>) {
+fn get_fn(tree: &Tree, code: &str) -> Vec<String> {
+    fn go(cursor: &mut TreeCursor, code: &str, vec: &mut Vec<String>) {
         let node = cursor.node();
         let node_type = node.kind();
 
@@ -46,14 +47,17 @@ fn get_fn(tree: &Tree, code: &str) -> Vec<String>
     v
 }
 
-fn print_tree(tree: &Tree, code: &str)
-{
-    fn go(cursor:&mut TreeCursor, code: &str, indent: usize) {
+fn print_tree(tree: &Tree, code: &str) {
+    fn go(cursor: &mut TreeCursor, code: &str, indent: usize) {
         let node = cursor.node();
         let node_type = node.kind();
         let node_code: &str = &code[node.byte_range()];
 
-        println!("{:indent$}{node_type}: \"{node_code}\"", "", indent=indent);
+        println!(
+            "{:indent$}{node_type}: \"{node_code}\"",
+            "",
+            indent = indent
+        );
 
         if cursor.goto_first_child() {
             go(cursor, code, indent + 2);
@@ -66,9 +70,14 @@ fn print_tree(tree: &Tree, code: &str)
     go(&mut tree.walk(), code, 0);
 }
 
-fn replace_fn(tree: &mut Tree, code: &str, replace: &str, replacement: &str) -> String
-{
-    fn go(cursor: &mut TreeCursor, code: &mut String, replace: &str, replacement: &str, mut shift: i32) -> i32 {
+fn replace_fn(tree: &mut Tree, code: &str, replace: &str, replacement: &str) -> String {
+    fn go(
+        cursor: &mut TreeCursor,
+        code: &mut String,
+        replace: &str,
+        replacement: &str,
+        mut shift: i32,
+    ) -> i32 {
         let node = cursor.node();
         let node_type = node.kind();
         let range = node.byte_range().shift(shift);
@@ -95,18 +104,20 @@ fn replace_fn(tree: &mut Tree, code: &str, replace: &str, replacement: &str) -> 
     code
 }
 
-// most strings will be 1/5 / 1/4 of this size
-const MAX_RANDOM_STRING_SIZE: usize = 200;
-
 fn rand_str() -> String {
-    rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), rand::thread_rng().gen_range(10..30))
+    rand::distributions::Alphanumeric.sample_string(
+        &mut rand::thread_rng(),
+        rand::thread_rng().gen_range(10..30),
+    )
 }
 
 fn main() {
-    let code = &std::fs::read_to_string(&env::args().collect::<Vec<String>>()[1]).expect("INCORECT FILE PATH");
+    let code = &std::fs::read_to_string(&env::args().collect::<Vec<String>>()[1])
+        .expect("INCORECT FILE PATH");
     let mut parser = Parser::new();
-    parser.set_language(&tree_sitter_python::language()).expect("error setting language");
-
+    parser
+        .set_language(&tree_sitter_python::language())
+        .expect("error setting language");
 
     let mut tree = parser.parse(code, None).expect("error parsing the code²");
 
@@ -118,7 +129,9 @@ fn main() {
     for e in &fns {
         println!("{}", e);
         new = replace_fn(&mut tree, &new, e, &rand_str());
-        tree = parser.parse(&new, None).expect("something wrong happen in parse loop");
+        tree = parser
+            .parse(&new, None)
+            .expect("something wrong happen in parse loop");
     }
     println!("\nnew code:\n\n{new}");
 }
