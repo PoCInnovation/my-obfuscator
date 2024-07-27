@@ -31,15 +31,17 @@ struct StringRange<'code> {
 
 fn get_strings<'code>(tree: &Tree, code: &'code str) -> Vec<StringRange<'code>> {
     fn go<'code>(cursor: &mut TreeCursor, code: &'code str, vec: &mut Vec<StringRange<'code>>) {
-        fn get_escapes<'code>(node: &tree_sitter::Node, code: &'code str) -> Vec<&'code str> {
+        fn get_escapes<'code>(node: &tree_sitter::Node) -> Vec<std::ops::Range<usize>> {
             let mut vec = vec![];
             let mut cursor = node.walk();
-            while cursor.goto_first_child() {
+            if !cursor.goto_first_child() {
+                return vec;
+            }
+            while cursor.goto_next_sibling() {
                 let node = cursor.node();
                 let node_type = node.kind();
                 if node_type == "escape_sequence" {
-                    vec.push(&code[node.byte_range()]);
-                    dbg!(&code[node.byte_range()]);
+                    vec.push(node.byte_range());
                 }
                 cursor.goto_next_sibling();
             }
@@ -53,7 +55,7 @@ fn get_strings<'code>(tree: &Tree, code: &'code str) -> Vec<StringRange<'code>> 
             vec.push(StringRange {
                 range: node.byte_range(),
                 string: &code[node.byte_range()],
-                escapes: get_escapes(&node, code),
+                escapes: get_escapes(&node),
             })
         }
 
