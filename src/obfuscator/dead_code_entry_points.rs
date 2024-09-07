@@ -10,8 +10,8 @@ const RANDOM_USELESS_CODE: [&str; 5] = [
 ];
 
 const DEAD_CODE_ENTRY_POINT: [&str; 6] = [
-    "if false:",
-    "if !true:",
+    "if False:",
+    "if !True:",
     "if 0 == 1:",
     "if 1 == 0:",
     "if 1 != 1:",
@@ -63,7 +63,7 @@ impl Obfuscator {
                     }
                 })
                 .collect::<String>();
-            println!("self.code: {}", self.code);
+            eprintln!("self.code: {}", self.code);
         }
         self.tree = self.parser.parse(&self.code, None).expect("error reparsing after dead code insertion");
     }

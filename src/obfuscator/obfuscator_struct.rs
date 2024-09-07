@@ -27,8 +27,12 @@ impl Obfuscator {
             .expect("error setting language");
         let tree = parser
             .parse(code.as_bytes(), None)
-            .expect("error parsing code");
+            .expect("error parsing code syntax error might be a reason");
 
         Obfuscator { code, parser, tree }
+    }
+
+    pub fn reparse(&mut self) {
+        self.tree = self.parser.parse(&self.code, None).expect("error reparsing");
     }
 }
