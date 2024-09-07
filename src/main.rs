@@ -18,7 +18,7 @@ fn main() {
     obfuscator.instert_dead_branches();
     obfuscator.obfuscate_strings();
     obfuscator.obfuctate_functions();
-    obfuscator.print_tree();
     obfuscator.obfuscate_integers();
+    obfuscator.print_tree();
     println!("{}", obfuscator);
 }
