@@ -1,3 +1,5 @@
+use crate::obfuscator::init;
+
 use super::Obfuscator;
 use rand::Rng;
 
@@ -11,7 +13,7 @@ const RANDOM_USELESS_CODE: [&str; 5] = [
 
 const DEAD_CODE_ENTRY_POINT: [&str; 6] = [
     "if False:",
-    "if !True:",
+    "if not True:",
     "if 0 == 1:",
     "if 1 == 0:",
     "if 1 != 1:",
@@ -38,7 +40,7 @@ impl Obfuscator {
         let iterations = rng.gen_range(1..lines / 3);
 
         for _ in 0..iterations {
-            let line = rng.gen_range(8..lines); // skip the helper function
+            let line = rng.gen_range(init::OBFUSCATOR_HELPER_FUNCTIONS.lines().count()..lines); // skip the helper function
             let code = self.code.clone();
 
             self.code = code

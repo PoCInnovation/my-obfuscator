@@ -1,12 +1,7 @@
-use tree_sitter::{Parser, Tree};
+use tree_sitter::Parser;
+use super::Obfuscator;
 
-pub struct Obfuscator {
-    pub code: String,
-    pub parser: Parser,
-    pub tree: Tree,
-}
-
-const STRING_OBFUSCATOR_HELPER: &str = r#"
+pub const OBFUSCATOR_HELPER_FUNCTIONS: &str = r#"
 def string_decode(string):
     string = list(string)
     if string == []:
@@ -15,13 +10,23 @@ def string_decode(string):
         if ord(string[i]) >= 35 and ord(string[i]) <= 125:
             string[i] = chr(ord(string[i]) - 1)
     return ''.join(string)
+
+def useless(*args, **kwargs):
+    return
+
+def thruthy(*args, **kwargs):
+    return useless(args, kwargs) or 1 == int(float("01.0342671"))
+
+def falsy(*args, **kwargs):
+    return thruthy(args, value="awae", iteration=2) and str(2) == "the_number_two"
+
 "#;
 
 impl Obfuscator {
     pub fn new(mut code: String) -> Self {
         let mut parser = Parser::new();
 
-        code.insert_str(0, STRING_OBFUSCATOR_HELPER);
+        code.insert_str(0, OBFUSCATOR_HELPER_FUNCTIONS);
         parser
             .set_language(&tree_sitter_python::language())
             .expect("error setting language");

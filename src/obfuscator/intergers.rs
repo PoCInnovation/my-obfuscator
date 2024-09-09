@@ -26,14 +26,17 @@ fn get_ints(tree: &Tree) -> Vec<std::ops::Range<usize>> {
 }
 
 fn encode_int(int: &str) -> String {
-    let int = int.parse::<i128>().expect("int where fake ints =(");
-    let shift_key: i128 = thread_rng().gen_range(1..16);
-    let xor_key: i128 = thread_rng().gen_range(1..u32::MAX as i128);
+    let int = int.parse::<i128>().expect("int litteral might be too big =(");
+    let mut rng = thread_rng();
+    let shift_key: i128 = rng.gen_range(1..16);
+    let xor_key: i128 = rng.gen_range(1..u32::MAX as i128);
+    let shift_mult: i128 = rng.gen_range(1..u32::MAX as i128);
 
     let encoded = int ^ (xor_key);
     let xor_key = xor_key << shift_key;
+    let shift_key = shift_key * shift_mult;
 
-    format!("({encoded}) ^ (({xor_key} ) >> {shift_key})")
+    format!("({encoded} ^ (({xor_key} ) >> ({shift_key} // {shift_mult})))")
 }
 
 impl Obfuscator {
@@ -41,7 +44,7 @@ impl Obfuscator {
         let ints = get_ints(&self.tree);
         let mut shift = 0;
 
-        ints.into_iter().skip(3).for_each(|int| {
+        ints.into_iter().for_each(|int| {
             let int = int.shift(shift);
             let val = &self.code[int.clone()];
             shift -= val.len() as i32;

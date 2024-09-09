@@ -1,12 +1,19 @@
 mod strings;
 mod print;
 mod functions;
-mod obfuscator_struct;
+mod init;
 mod intergers;
 mod boolean;
 mod dead_code_entry_points;
-pub use obfuscator_struct::Obfuscator;
 mod random_identifiers;
+
+use tree_sitter::{Parser, Tree};
+
+pub struct Obfuscator {
+    code: String,
+    parser: Parser,
+    tree: Tree,
+}
 
 trait Shiftable {
     fn shift(&self, shift: i32) -> Self
