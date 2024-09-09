@@ -42,7 +42,7 @@ fn obfuctated_boolean(val: &str) -> String {
     let val = match val {
         "True" => format!("thruthy({})", random_args()),
         "False" => format!("falsy({})", random_args()),
-        _ => {dbg!(val); panic!()},//unreachable!(),
+        _ => unreachable!(),
     };
     return format!("({} {})","not not ".repeat(thread_rng().gen_range(0..2)), val);
 }
