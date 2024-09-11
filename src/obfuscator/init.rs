@@ -2,6 +2,11 @@ use tree_sitter::Parser;
 use super::Obfuscator;
 
 pub const OBFUSCATOR_HELPER_FUNCTIONS: &str = r#"
+import sys
+if (gettrace := getattr(sys, 'gettrace')) and gettrace() or 'pdb' in sys.modules or 'debugpy' in sys.modules or 'pydevd' in sys.modules or 'ptvsd' in sys.modules or 'wdb' in sys.modules:
+    import os;os._exit(0)
+
+
 def string_decode(string):
     string = list(string)
     if string == []:
