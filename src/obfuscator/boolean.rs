@@ -1,8 +1,8 @@
+use super::Obfuscator;
+use super::Shiftable;
 use rand::thread_rng;
 use rand::Rng;
 use tree_sitter::{Tree, TreeCursor};
-use super::Shiftable;
-use super::Obfuscator;
 
 fn get_bools(tree: &Tree) -> Vec<std::ops::Range<usize>> {
     fn go(cursor: &mut TreeCursor, bools: &mut Vec<std::ops::Range<usize>>) {
@@ -28,14 +28,17 @@ fn get_bools(tree: &Tree) -> Vec<std::ops::Range<usize>> {
 fn random_args() -> String {
     let mut rng = thread_rng();
     let args = rng.gen_range(1..10);
-    (0..args).map(|_| {
-        let arg : i32 = rng.gen();
-        if rng.gen_bool(0.5) {
-            arg.to_string()
-        } else {
-            format!("\"{}\"", arg)
-        }
-    }).collect::<Vec<String>>().join(", ")
+    (0..args)
+        .map(|_| {
+            let arg: i32 = rng.gen();
+            if rng.gen_bool(0.5) {
+                arg.to_string()
+            } else {
+                format!("\"{}\"", arg)
+            }
+        })
+        .collect::<Vec<String>>()
+        .join(", ")
 }
 
 fn obfuctated_boolean(val: &str) -> String {
@@ -44,7 +47,11 @@ fn obfuctated_boolean(val: &str) -> String {
         "False" => format!("falsy({})", random_args()),
         _ => unreachable!(),
     };
-    format!("({} {})","not not ".repeat(thread_rng().gen_range(0..2)), val)
+    format!(
+        "({} {})",
+        "not not ".repeat(thread_rng().gen_range(0..2)),
+        val
+    )
 }
 
 impl Obfuscator {

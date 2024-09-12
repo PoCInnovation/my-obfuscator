@@ -1,5 +1,5 @@
-use tree_sitter::Parser;
 use super::Obfuscator;
+use tree_sitter::Parser;
 
 pub const OBFUSCATOR_HELPER_FUNCTIONS: &str = r#"
 import sys
@@ -43,6 +43,9 @@ impl Obfuscator {
     }
 
     pub fn reparse(&mut self) {
-        self.tree = self.parser.parse(&self.code, None).expect("error reparsing");
+        self.tree = self
+            .parser
+            .parse(&self.code, None)
+            .expect("error reparsing");
     }
 }

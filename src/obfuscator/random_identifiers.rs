@@ -28,4 +28,3 @@ pub fn rand_str() -> String {
         a
     }
 }
-

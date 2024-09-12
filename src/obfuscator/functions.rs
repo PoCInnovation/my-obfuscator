@@ -1,9 +1,7 @@
-use tree_sitter::{Tree, TreeCursor};
+use super::random_identifiers::rand_str;
 use super::Obfuscator;
 use super::Shiftable;
-use super::random_identifiers::rand_str;
-
-
+use tree_sitter::{Tree, TreeCursor};
 
 fn get_fn(tree: &Tree, code: &str) -> Vec<String> {
     fn go(cursor: &mut TreeCursor, code: &str, vec: &mut Vec<String>) {
@@ -64,14 +62,14 @@ fn replace_fn(tree: &mut Tree, code: &str, replace: &str, replacement: &str) -> 
     code
 }
 
-
 impl Obfuscator {
     pub fn obfuctate_functions(&mut self) {
         let fns = get_fn(&self.tree, &self.code);
         let mut new = self.code.clone();
         for e in &fns {
             new = replace_fn(&mut self.tree, &new, e, &rand_str());
-            self.tree = self.parser
+            self.tree = self
+                .parser
                 .parse(&new, None)
                 .expect("in function obfuscation something wrong happen in parse loop");
         }

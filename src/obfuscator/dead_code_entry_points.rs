@@ -49,11 +49,15 @@ impl Obfuscator {
                 .map(|(i, l)| {
                     if i == line {
                         let indent = figure_out_indentation(l);
-                        let mut line = DEAD_CODE_ENTRY_POINT[rng.gen_range(0..DEAD_CODE_ENTRY_POINT.len())].to_string();
+                        let mut line = DEAD_CODE_ENTRY_POINT
+                            [rng.gen_range(0..DEAD_CODE_ENTRY_POINT.len())]
+                        .to_string();
                         line.insert_str(0, " ".repeat(indent).as_str());
                         line.push('\n');
                         line.push_str(" ".repeat(indent + 4).as_str());
-                        line.push_str(RANDOM_USELESS_CODE[rng.gen_range(0..RANDOM_USELESS_CODE.len())]);
+                        line.push_str(
+                            RANDOM_USELESS_CODE[rng.gen_range(0..RANDOM_USELESS_CODE.len())],
+                        );
                         line.push('\n');
                         line.push_str(l);
                         line.push('\n');
@@ -67,6 +71,9 @@ impl Obfuscator {
                 .collect::<String>();
             eprintln!("self.code: {}", self.code);
         }
-        self.tree = self.parser.parse(&self.code, None).expect("error reparsing after dead code insertion");
+        self.tree = self
+            .parser
+            .parse(&self.code, None)
+            .expect("error reparsing after dead code insertion");
     }
 }

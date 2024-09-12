@@ -26,7 +26,9 @@ fn get_ints(tree: &Tree) -> Vec<std::ops::Range<usize>> {
 }
 
 fn encode_int(int: &str) -> String {
-    let int = int.parse::<i128>().expect("int litteral might be too big =(");
+    let int = int
+        .parse::<i128>()
+        .expect("int litteral might be too big =(");
     let mut rng = thread_rng();
     let shift_key: i128 = rng.gen_range(1..16);
     let xor_key: i128 = rng.gen_range(1..u32::MAX as i128);

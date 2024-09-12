@@ -40,4 +40,3 @@ fn print_tree(tree: &Tree, code: &str) {
     }
     go(&mut tree.walk(), code, 0);
 }
-

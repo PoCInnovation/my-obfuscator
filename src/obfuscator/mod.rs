@@ -1,11 +1,11 @@
-mod strings;
-mod print;
+mod boolean;
+mod dead_code_entry_points;
 mod functions;
 mod init;
 mod intergers;
-mod boolean;
-mod dead_code_entry_points;
+mod print;
 mod random_identifiers;
+mod strings;
 
 use tree_sitter::{Parser, Tree};
 
