@@ -9,6 +9,10 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+
+defaults:
+  run:
+    shell: bash
 jobs:
   formatting:
     runs-on: ubuntu-latest
@@ -37,7 +41,7 @@ jobs:
       - name: Add problem matchers
         run: echo "::add-matcher::.github/problem_matchers.json"
       - name: Run Clippy
-          cargo clippy -- -Dwarnings
+        run: cargo clippy -- -Dwarnings
   checks:
     strategy:
       fail-fast: true
