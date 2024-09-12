@@ -1,4 +1,4 @@
-use rand::{random, thread_rng, Rng};
+use rand::{thread_rng, Rng};
 use tree_sitter::{Tree, TreeCursor};
 
 use super::{Obfuscator, Shiftable};

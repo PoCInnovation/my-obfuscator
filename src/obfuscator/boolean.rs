@@ -44,7 +44,7 @@ fn obfuctated_boolean(val: &str) -> String {
         "False" => format!("falsy({})", random_args()),
         _ => unreachable!(),
     };
-    return format!("({} {})","not not ".repeat(thread_rng().gen_range(0..2)), val);
+    format!("({} {})","not not ".repeat(thread_rng().gen_range(0..2)), val)
 }
 
 impl Obfuscator {
