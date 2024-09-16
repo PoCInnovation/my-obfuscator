@@ -66,13 +66,12 @@ fn replace_fn(tree: &mut Tree, code: &str, replace: &str, replacement: &str) -> 
 
 impl Obfuscator {
     pub fn obfuctate_functions(&mut self) -> Result<()> {
+        let _ = self.reparse(ObfuscatorError::Booleans);
         let fns = get_fn(&self.tree, &self.code);
-        let mut new = self.code.clone();
         for e in &fns {
-            new = replace_fn(&mut self.tree, &new, e, &rand_str());
+            self.code = replace_fn(&mut self.tree, &mut self.code, e, &rand_str());
             self.reparse(ObfuscatorError::Functions(e.clone()))?;
         }
-        self.code = new;
         Ok(())
     }
 }
