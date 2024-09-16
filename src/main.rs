@@ -15,7 +15,7 @@ fn main() -> obfuscator::Result<()> {
     };
     let mut obfuscator = Obfuscator::new(code);
 
-    obfuscator.instert_dead_branches()?;
+    obfuscator.insert_dead_branches()?;
     obfuscator.obfuscate_booleans()?;
     obfuscator.obfuscate_strings()?;
     obfuscator.obfuctate_functions()?;

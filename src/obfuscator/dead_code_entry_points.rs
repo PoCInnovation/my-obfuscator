@@ -37,7 +37,7 @@ fn figure_out_indentation(line: &str) -> usize {
 }
 
 impl Obfuscator {
-    pub fn instert_dead_branches(&mut self) -> Result<()> {
+    pub fn insert_dead_branches(&mut self) -> Result<()> {
         let lines = self.code.lines().count();
         let mut rng = rand::thread_rng();
         let iterations = rng.gen_range(1..lines / 3);
