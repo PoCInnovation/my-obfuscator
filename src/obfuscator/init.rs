@@ -1,4 +1,5 @@
-use super::Obfuscator;
+use super::Result;
+use super::{error::ObfuscatorError, Obfuscator};
 use tree_sitter::Parser;
 
 pub const OBFUSCATOR_HELPER_FUNCTIONS: &str = r#"
@@ -36,16 +37,18 @@ impl Obfuscator {
             .set_language(&tree_sitter_python::language())
             .expect("error setting language");
         let tree = parser
-            .parse(code.as_bytes(), None)
-            .expect("error parsing code syntax error might be a reason");
+            .parse(&code, None)
+            .expect("Parsing code failed likely due to invalid syntax");
 
         Obfuscator { code, parser, tree }
     }
 
-    pub fn reparse(&mut self) {
-        self.tree = self
-            .parser
-            .parse(&self.code, None)
-            .expect("error reparsing");
+    pub fn reparse<'a>(&mut self, error_case: ObfuscatorError) -> Result<()> {
+        if let Some(new_tree) = self.parser.parse(&self.code, None) {
+            self.tree = new_tree;
+            Ok(())
+        } else {
+            Err(error_case)
+        }
     }
 }

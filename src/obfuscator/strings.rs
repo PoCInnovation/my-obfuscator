@@ -1,3 +1,5 @@
+use crate::obfuscator::error::ObfuscatorError;
+use super::Result;
 use super::Obfuscator;
 use super::Shiftable;
 use tree_sitter::{Tree, TreeCursor};
@@ -80,7 +82,7 @@ fn get_strings(tree: &Tree) -> Vec<StringRange> {
 }
 
 impl Obfuscator {
-    pub fn obfuscate_strings(&mut self) {
+    pub fn obfuscate_strings(&mut self) -> Result<()> {
         // strings
         eprintln!("strings");
         self.code = {
@@ -108,10 +110,6 @@ impl Obfuscator {
             }
             code
         };
-
-        self.tree = self
-            .parser
-            .parse(&self.code, None)
-            .expect("error parsing the code²");
+        self.reparse(ObfuscatorError::Strings)
     }
 }

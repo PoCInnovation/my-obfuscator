@@ -3,7 +3,7 @@ use std::env;
 
 use obfuscator::Obfuscator;
 
-fn main() {
+fn main() -> obfuscator::Result<()> {
     let code = {
         let args = env::args().collect::<Vec<String>>();
         if args.len() < 2 {
@@ -15,11 +15,12 @@ fn main() {
     };
     let mut obfuscator = Obfuscator::new(code);
 
-    obfuscator.instert_dead_branches();
-    obfuscator.obfuscate_booleans();
-    obfuscator.obfuscate_strings();
-    obfuscator.obfuctate_functions();
-    obfuscator.obfuscate_integers();
+    obfuscator.instert_dead_branches()?;
+    obfuscator.obfuscate_booleans()?;
+    obfuscator.obfuscate_strings()?;
+    obfuscator.obfuctate_functions()?;
+    obfuscator.obfuscate_integers()?;
     obfuscator.print_tree();
     println!("{}", obfuscator);
+    Ok(())
 }

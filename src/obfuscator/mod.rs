@@ -6,6 +6,8 @@ mod intergers;
 mod print;
 mod random_identifiers;
 mod strings;
+mod error;
+pub use error::Result;
 
 use tree_sitter::{Parser, Tree};
 

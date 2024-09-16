@@ -1,3 +1,5 @@
+use super::error::ObfuscatorError;
+use super::error::Result;
 use super::Obfuscator;
 use super::Shiftable;
 use rand::thread_rng;
@@ -55,7 +57,7 @@ fn obfuctated_boolean(val: &str) -> String {
 }
 
 impl Obfuscator {
-    pub fn obfuscate_booleans(&mut self) {
+    pub fn obfuscate_booleans(&mut self) -> Result<()> {
         let bools = get_bools(&self.tree);
         let mut shift = 0;
 
@@ -68,6 +70,6 @@ impl Obfuscator {
             self.code.replace_range(boolean, &encoded);
             shift += encoded.len() as i32;
         });
-        self.reparse();
+        self.reparse(ObfuscatorError::Booleans)
     }
 }
