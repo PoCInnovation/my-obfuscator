@@ -1,7 +1,7 @@
-use crate::obfuscator::error::ObfuscatorError;
-use super::Result;
 use super::Obfuscator;
+use super::Result;
 use super::Shiftable;
+use crate::obfuscator::error::ObfuscatorError;
 use tree_sitter::{Tree, TreeCursor};
 
 #[derive(Debug)]

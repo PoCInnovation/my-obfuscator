@@ -36,8 +36,7 @@ impl Obfuscator {
         parser
             .set_language(&tree_sitter_python::language())
             .expect("error setting language");
-        let tree = parser
-            .parse(&code, None);
+        let tree = parser.parse(&code, None);
         if let Some(tree) = tree {
             Ok(Obfuscator { code, parser, tree })
         } else {
