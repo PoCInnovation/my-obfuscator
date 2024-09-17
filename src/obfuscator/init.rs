@@ -29,7 +29,7 @@ def falsy(*args, **kwargs):
 "#;
 
 impl Obfuscator {
-    pub fn new(mut code: String) -> Self {
+    pub fn new(mut code: String) -> Result<Self> {
         let mut parser = Parser::new();
 
         code.insert_str(0, OBFUSCATOR_HELPER_FUNCTIONS);
@@ -37,13 +37,15 @@ impl Obfuscator {
             .set_language(&tree_sitter_python::language())
             .expect("error setting language");
         let tree = parser
-            .parse(&code, None)
-            .expect("Parsing code failed likely due to invalid syntax");
-
-        Obfuscator { code, parser, tree }
+            .parse(&code, None);
+        if let Some(tree) = tree {
+            Ok(Obfuscator { code, parser, tree })
+        } else {
+            Err(ObfuscatorError::InvalidCode)
+        }
     }
 
-    pub fn reparse<'a>(&mut self, error_case: ObfuscatorError) -> Result<()> {
+    pub fn reparse(&mut self, error_case: ObfuscatorError) -> Result<()> {
         if let Some(new_tree) = self.parser.parse(&self.code, None) {
             self.tree = new_tree;
             Ok(())

@@ -74,7 +74,7 @@ impl Obfuscator {
                 .collect::<String>();
             eprintln!("self.code: {}", self.code);
         }
-        if let Err(_) = self.reparse(ObfuscatorError::DeadCode) {
+        if self.reparse(ObfuscatorError::DeadCode).is_err() {
             self.insert_dead_branches() // might hang a better solution must be found
         } else {
             Ok(())

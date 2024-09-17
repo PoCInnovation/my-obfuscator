@@ -69,7 +69,7 @@ impl Obfuscator {
         let _ = self.reparse(ObfuscatorError::Booleans);
         let fns = get_fn(&self.tree, &self.code);
         for e in &fns {
-            self.code = replace_fn(&mut self.tree, &mut self.code, e, &rand_str());
+            self.code = replace_fn(&mut self.tree, &self.code, e, &rand_str());
             self.reparse(ObfuscatorError::Functions(e.clone()))?;
         }
         Ok(())

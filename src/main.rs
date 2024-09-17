@@ -23,6 +23,6 @@ fn main() -> obfuscator::Result<()> {
     } else {
         run_obfuscation(Obfuscator::new(
             std::fs::read_to_string(&args[1]).expect("error reading file"),
-        ))
+        )?)
     }
 }
