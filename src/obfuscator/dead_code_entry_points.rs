@@ -43,7 +43,7 @@ impl Obfuscator {
         let iterations = rng.gen_range(1..lines / 3);
 
         for _ in 0..iterations {
-            let line = rng.gen_range(init::OBFUSCATOR_HELPER_FUNCTIONS.lines().count()..lines); // skip the helper function
+            let line = rng.gen_range(init::OBFUSCATOR_HELPER_FUNCTIONS.lines().count()..lines);
             let code = self.code.clone();
 
             self.code = code
@@ -74,6 +74,10 @@ impl Obfuscator {
                 .collect::<String>();
             eprintln!("self.code: {}", self.code);
         }
-        self.reparse(ObfuscatorError::DeadCode)
+        if let Err(_) = self.reparse(ObfuscatorError::DeadCode) {
+            self.insert_dead_branches() // might hang a better solution must be found
+        } else {
+            Ok(())
+        }
     }
 }
