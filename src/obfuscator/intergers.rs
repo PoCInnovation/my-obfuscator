@@ -1,7 +1,10 @@
 use rand::{thread_rng, Rng};
 use tree_sitter::{Tree, TreeCursor};
 
-use super::{Obfuscator, Shiftable};
+use super::{
+    error::{ObfuscatorError, Result},
+    Obfuscator, Shiftable,
+};
 
 fn get_ints(tree: &Tree) -> Vec<std::ops::Range<usize>> {
     fn go(cursor: &mut TreeCursor, ints: &mut Vec<std::ops::Range<usize>>) {
@@ -42,7 +45,7 @@ fn encode_int(int: &str) -> String {
 }
 
 impl Obfuscator {
-    pub fn obfuscate_integers(&mut self) {
+    pub fn obfuscate_integers(&mut self) -> Result<()> {
         let ints = get_ints(&self.tree);
         let mut shift = 0;
 
@@ -55,6 +58,6 @@ impl Obfuscator {
             self.code.replace_range(int, &encoded);
             shift += encoded.len() as i32;
         });
-        self.reparse();
+        self.reparse(ObfuscatorError::Numbers)
     }
 }

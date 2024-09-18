@@ -1,6 +1,9 @@
 use crate::obfuscator::init;
 
-use super::Obfuscator;
+use super::{
+    error::{ObfuscatorError, Result},
+    Obfuscator,
+};
 use rand::Rng;
 
 const RANDOM_USELESS_CODE: [&str; 5] = [
@@ -34,13 +37,13 @@ fn figure_out_indentation(line: &str) -> usize {
 }
 
 impl Obfuscator {
-    pub fn instert_dead_branches(&mut self) {
+    pub fn insert_dead_branches(&mut self) -> Result<()> {
         let lines = self.code.lines().count();
         let mut rng = rand::thread_rng();
         let iterations = rng.gen_range(1..lines / 3);
 
         for _ in 0..iterations {
-            let line = rng.gen_range(init::OBFUSCATOR_HELPER_FUNCTIONS.lines().count()..lines); // skip the helper function
+            let line = rng.gen_range(init::OBFUSCATOR_HELPER_FUNCTIONS.lines().count()..lines);
             let code = self.code.clone();
 
             self.code = code
@@ -71,9 +74,10 @@ impl Obfuscator {
                 .collect::<String>();
             eprintln!("self.code: {}", self.code);
         }
-        self.tree = self
-            .parser
-            .parse(&self.code, None)
-            .expect("error reparsing after dead code insertion");
+        if self.reparse(ObfuscatorError::DeadCode).is_err() {
+            self.insert_dead_branches() // might hang a better solution must be found
+        } else {
+            Ok(())
+        }
     }
 }

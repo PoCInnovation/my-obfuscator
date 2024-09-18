@@ -1,3 +1,5 @@
+use super::error::ObfuscatorError;
+use super::error::Result;
 use super::random_identifiers::rand_str;
 use super::Obfuscator;
 use super::Shiftable;
@@ -63,16 +65,13 @@ fn replace_fn(tree: &mut Tree, code: &str, replace: &str, replacement: &str) -> 
 }
 
 impl Obfuscator {
-    pub fn obfuctate_functions(&mut self) {
+    pub fn obfuctate_functions(&mut self) -> Result<()> {
+        let _ = self.reparse(ObfuscatorError::Booleans);
         let fns = get_fn(&self.tree, &self.code);
-        let mut new = self.code.clone();
         for e in &fns {
-            new = replace_fn(&mut self.tree, &new, e, &rand_str());
-            self.tree = self
-                .parser
-                .parse(&new, None)
-                .expect("in function obfuscation something wrong happen in parse loop");
+            self.code = replace_fn(&mut self.tree, &self.code, e, &rand_str());
+            self.reparse(ObfuscatorError::Functions(e.clone()))?;
         }
-        self.code = new;
+        Ok(())
     }
 }
