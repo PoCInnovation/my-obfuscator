@@ -1,16 +1,21 @@
 mod obfuscator;
+use std::process::ExitCode;
+
 use clap::{arg, value_parser, ArgAction, ArgMatches, Command, ValueHint};
 
 use obfuscator::Obfuscator;
 const AVAILABLE_OBFUSCATION_METHODS: [&str; 5] = ["int", "string", "fn", "bools", "dead"];
 
-fn run_obfuscation(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator::Result<()> {
+fn run_obfuscator(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator::Result<()> {
     let run_all = !matches.contains_id("set");
     let set_options = matches
         .get_many::<String>("set")
         .map(|values| values.collect::<Vec<_>>())
         .unwrap_or_default(); // Default to empty if --set not provided
 
+    if !obfuscator.is_syntax_ok()? {
+        Err(obfuscator::error::ObfuscatorError::InvalidCode)?;
+    }
     if run_all || set_options.contains(&&"dead".to_string()) {
         obfuscator.insert_dead_branches()?;
     }
@@ -34,7 +39,24 @@ fn run_obfuscation(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscato
     Ok(())
 }
 
-fn main() -> obfuscator::Result<()> {
+fn run_obfuscation(code: String, matches: ArgMatches) -> ExitCode {
+    let obfuscator = match Obfuscator::new(code) {
+        Ok(ob) => ob,
+        Err(err) => {
+            println!("{err}");
+            return ExitCode::SUCCESS;
+        }
+    };
+
+    if let Err(err) = run_obfuscator(obfuscator, matches) {
+        println!("{err}");
+        ExitCode::FAILURE
+    } else {
+        ExitCode::SUCCESS
+    }
+}
+
+fn main() -> ExitCode {
     let matches = Command::new("Obfuscator")
         .version("0.0")
         .about("static obfuscation of python code")
@@ -58,8 +80,6 @@ fn main() -> obfuscator::Result<()> {
         .get_matches();
 
     let file_name = matches.get_one::<std::path::PathBuf>("script").unwrap();
-    run_obfuscation(
-        Obfuscator::new(std::fs::read_to_string(file_name).expect("Must be a real file"))?,
-        matches,
-    )
+    let code = std::fs::read_to_string(file_name).expect("The Path given was wrong");
+    run_obfuscation(code, matches)
 }

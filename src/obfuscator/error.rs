@@ -5,6 +5,7 @@ pub enum ObfuscatorError {
     Booleans,
     Strings,
     Numbers,
+    PythonSyntaxCheck(std::io::Error),
     Functions(String),
 }
 
@@ -21,6 +22,9 @@ impl std::fmt::Display for ObfuscatorError {
                 f,
                 "Obfuscator failed while obfuscation functions at function {s}"
             ),
+            Self::PythonSyntaxCheck(err) => {
+                write!(f, "The Python command for syntax failed : {err}")
+            }
             _ => write!(
                 f,
                 "Obfuscator encountered an error in {:?} obfuctation",
@@ -30,4 +34,11 @@ impl std::fmt::Display for ObfuscatorError {
     }
 }
 
-impl std::error::Error for ObfuscatorError {}
+impl std::error::Error for ObfuscatorError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::PythonSyntaxCheck(err) => Some(err),
+            _ => None
+        }
+    }
+}
