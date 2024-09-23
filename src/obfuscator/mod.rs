@@ -1,12 +1,13 @@
 mod boolean;
 mod dead_code_entry_points;
-mod error;
+pub mod error;
 mod functions;
 mod init;
 mod intergers;
 mod print;
 mod random_identifiers;
 mod strings;
+mod syntax;
 pub use error::Result;
 
 use tree_sitter::{Parser, Tree};
