@@ -45,33 +45,37 @@ fn insert_dead_branches(code: &str, attempt: usize) -> String {
     for _ in 0..iterations {
         let line = rng.gen_range(init::OBFUSCATOR_HELPER_FUNCTIONS.lines().count()..lines);
 
-        new_code = new_code.lines().enumerate().map(|(i, l)| {
-            if i == line {
-                let indent = figure_out_indentation(l);
-                let mut line = DEAD_CODE_ENTRY_POINT[rng.gen_range(0..DEAD_CODE_ENTRY_POINT.len())]
+        new_code = new_code
+            .lines()
+            .enumerate()
+            .map(|(i, l)| {
+                if i == line {
+                    let indent = figure_out_indentation(l);
+                    let mut line = DEAD_CODE_ENTRY_POINT
+                        [rng.gen_range(0..DEAD_CODE_ENTRY_POINT.len())]
                     .to_string();
-                line.insert_str(0, " ".repeat(indent).as_str());
-                line.push('\n');
-                line.push_str(" ".repeat(indent + 4).as_str());
-                line.push_str(RANDOM_USELESS_CODE[rng.gen_range(0..RANDOM_USELESS_CODE.len())]);
-                line.push('\n');
-                line.push_str(l);
-                line.push('\n');
-                line
-            } else {
-                let mut l = l.to_string();
-                l.push('\n');
-                l
-            }
-        })
-        .collect::<String>();
+                    line.insert_str(0, " ".repeat(indent).as_str());
+                    line.push('\n');
+                    line.push_str(" ".repeat(indent + 4).as_str());
+                    line.push_str(RANDOM_USELESS_CODE[rng.gen_range(0..RANDOM_USELESS_CODE.len())]);
+                    line.push('\n');
+                    line.push_str(l);
+                    line.push('\n');
+                    line
+                } else {
+                    let mut l = l.to_string();
+                    l.push('\n');
+                    l
+                }
+            })
+            .collect::<String>();
     }
     new_code
 }
 
 impl Obfuscator {
     pub fn insert_dead_branches(&mut self) -> Result<()> {
-        let attempts :usize = 5;
+        let attempts: usize = 5;
         let old = self.code.clone();
 
         self.code = insert_dead_branches(&self.code, 0);

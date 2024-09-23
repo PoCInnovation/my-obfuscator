@@ -38,7 +38,7 @@ impl std::error::Error for ObfuscatorError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             Self::PythonSyntaxCheck(err) => Some(err),
-            _ => None
+            _ => None,
         }
     }
 }
