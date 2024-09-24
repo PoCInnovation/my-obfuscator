@@ -5,6 +5,7 @@ pub enum ObfuscatorError {
     Booleans,
     Strings,
     Numbers,
+    RemoveCommentsAndEmptyLines,
     PythonSyntaxCheck(std::io::Error),
     Functions(String),
 }

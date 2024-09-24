@@ -4,7 +4,7 @@ use std::process::ExitCode;
 use clap::{arg, value_parser, ArgAction, ArgMatches, Command, ValueHint};
 
 use obfuscator::Obfuscator;
-const AVAILABLE_OBFUSCATION_METHODS: [&str; 5] = ["int", "string", "fn", "bools", "dead"];
+const AVAILABLE_OBFUSCATION_METHODS: [&str; 6] = ["int", "string", "fn", "bools", "dead", "rm_cmt"];
 
 fn run_obfuscator(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator::Result<()> {
     let run_all = !matches.contains_id("set");
@@ -15,6 +15,9 @@ fn run_obfuscator(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator
 
     if !obfuscator.is_syntax_ok()? {
         Err(obfuscator::error::ObfuscatorError::InvalidCode)?;
+    }
+    if run_all || set_options.contains(&&"rm_cmt".to_string()) {
+        obfuscator.remove_comments_and_empty_lines()?;
     }
     if run_all || set_options.contains(&&"dead".to_string()) {
         obfuscator.insert_dead_branches()?;

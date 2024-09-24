@@ -8,6 +8,7 @@ mod print;
 mod random_identifiers;
 mod strings;
 mod syntax;
+mod remove_comments_and_empty_lines;
 pub use error::Result;
 
 use tree_sitter::{Parser, Tree};
