@@ -3,11 +3,6 @@ use super::{error::ObfuscatorError, Obfuscator};
 use tree_sitter::Parser;
 
 pub const OBFUSCATOR_HELPER_FUNCTIONS: &str = r#"
-import sys
-if (gettrace := getattr(sys, 'gettrace')) and gettrace() or 'pdb' in sys.modules or 'debugpy' in sys.modules or 'pydevd' in sys.modules or 'ptvsd' in sys.modules or 'wdb' in sys.modules:
-    import os;os._exit(0)
-
-
 def string_decode(string):
     string = list(string)
     if string == []:
@@ -17,6 +12,10 @@ def string_decode(string):
             string[i] = chr(ord(string[i]) - 1)
     return ''.join(string)
 
+import sys
+if (gettrace := getattr(sys, 'gettrace')) and gettrace() or 'pdb' in sys.modules or 'debugpy' in sys.modules or 'pydevd' in sys.modules or 'ptvsd' in sys.modules or 'wdb' in sys.modules:
+    import os;os._exit(0)
+
 def useless(*args, **kwargs):
     return
 
@@ -25,7 +24,6 @@ def thruthy(*args, **kwargs):
 
 def falsy(*args, **kwargs):
     return thruthy(args, value="awae", iteration=2) and str(2) == "the_number_two"
-
 "#;
 
 impl Obfuscator {
