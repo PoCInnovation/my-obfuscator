@@ -18,13 +18,12 @@ mod tests {
 }
 
 pub fn rand_str() -> String {
-    let a = rand::distributions::Alphanumeric.sample_string(
+    let mut a = rand::distributions::Alphanumeric.sample_string(
         &mut rand::thread_rng(),
         rand::thread_rng().gen_range(10..30),
     );
     if a.starts_with(char::is_numeric) {
-        format!("a{}", rand::thread_rng().gen_range(b'A'..=b'Z') as char)
-    } else {
-        a
+        a.insert(0, rand::thread_rng().gen_range(b'A'..=b'Z') as char);
     }
+    a
 }
