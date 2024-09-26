@@ -17,7 +17,7 @@ fn string_encode(sr: &StringRange, s: &str) -> String {
         if i == 0 || i == s.len() - 1 {
             continue;
         }
-        if ({
+        if {
             let mut ctn = false;
             for esc in &sr.escapes {
                 if esc.contains(&i) {
@@ -26,15 +26,15 @@ fn string_encode(sr: &StringRange, s: &str) -> String {
                 }
             }
             ctn
-        }) || !(36..125).contains(&(c as u32))
+        }
         {
             new.push(c);
             continue;
         }
         eprint!("from {c}, {} ", c as u32);
-        let new_letter = char::from_u32(c as u32 + 1).expect("string enocode char thing");
+        let new_letter = format!("\\x{:x}", c as u32);
         eprintln!("to {new_letter}");
-        new.push(new_letter);
+        new.push_str(&new_letter);
     }
     new
 }

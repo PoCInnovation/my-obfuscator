@@ -8,7 +8,7 @@ def string_decode(string):
     if string == []:
         return str()
     for i in range(len(string)):
-        if ord(string[i]) >= 35 and ord(string[i]) <= 125:
+        if ord(string[i]) >= 35 and ord(string[i]) <= 125 and 0:
             string[i] = chr(ord(string[i]) - 1)
     return ''.join(string)
 
