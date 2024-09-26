@@ -6,9 +6,9 @@ mod init;
 mod intergers;
 mod print;
 mod random_identifiers;
+mod remove_comments_and_empty_lines;
 mod strings;
 mod syntax;
-mod remove_comments_and_empty_lines;
 pub use error::Result;
 
 use tree_sitter::{Parser, Tree};
