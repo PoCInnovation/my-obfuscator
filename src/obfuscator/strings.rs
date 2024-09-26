@@ -6,6 +6,8 @@ use tree_sitter::{Tree, TreeCursor};
 
 #[derive(Debug)]
 struct StringRange {
+    string_start_skip: usize,
+    string_end_skip: usize,
     range: std::ops::Range<usize>,
     escapes: Vec<std::ops::Range<usize>>,
 }
@@ -14,7 +16,7 @@ fn string_encode(sr: &StringRange, s: &str) -> String {
     let mut new = String::with_capacity(s.len() - 2);
 
     for (i, c) in s.char_indices() {
-        if i == 0 || i == s.len() - 1 {
+        if i <= sr.string_start_skip || i >= s.len() - sr.string_end_skip {
             continue;
         }
         if {
@@ -26,8 +28,7 @@ fn string_encode(sr: &StringRange, s: &str) -> String {
                 }
             }
             ctn
-        }
-        {
+        } {
             new.push(c);
             continue;
         }
@@ -51,7 +52,7 @@ fn get_strings(tree: &Tree) -> Vec<StringRange> {
             while cursor.goto_next_sibling() {
                 let node = cursor.node();
                 let node_type = node.kind();
-                if node_type == "escape_sequence" {
+                if node_type == "escape_sequence" || node_type == "interpolation" {
                     vec.push(node.byte_range());
                 }
                 cursor.goto_next_sibling();
@@ -64,6 +65,8 @@ fn get_strings(tree: &Tree) -> Vec<StringRange> {
 
         if node_type == "string" {
             vec.push(StringRange {
+                string_end_skip: 1,
+                string_start_skip: 1,
                 range: node.byte_range(),
                 escapes: get_escapes(&node),
             })
