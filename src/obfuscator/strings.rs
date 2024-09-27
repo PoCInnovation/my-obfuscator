@@ -2,8 +2,8 @@ use super::Obfuscator;
 use super::Result;
 use super::Shiftable;
 use crate::obfuscator::error::ObfuscatorError;
-use tree_sitter::{Tree, TreeCursor};
 use std::ops::Range;
+use tree_sitter::{Tree, TreeCursor};
 
 type RangeVec = Vec<Range<usize>>;
 
@@ -21,7 +21,11 @@ fn string_encode(sr: &StringRange, s: &str) -> String {
     'outer: for (i, c) in s.char_indices() {
         for esc in &sr.escapes {
             if esc.contains(&(i + sr.range.start + sr.string_start_skip)) {
-                eprintln!("esci = {:?}, {} , c= {c}",esc, (i + sr.range.start + sr.string_start_skip));
+                eprintln!(
+                    "esci = {:?}, {} , c= {c}",
+                    esc,
+                    (i + sr.range.start + sr.string_start_skip)
+                );
                 new.push(c);
                 continue 'outer;
             }
@@ -105,7 +109,8 @@ impl Obfuscator {
             let mut shift = 0;
             for e in strings {
                 eprintln!("loop string");
-                let str = &self.code[e.range.start + e.string_start_skip .. e.range.end - e.string_end_skip];
+                let str = &self.code
+                    [e.range.start + e.string_start_skip..e.range.end - e.string_end_skip];
                 eprintln!("string = {str}");
                 dbg!(&e);
 
