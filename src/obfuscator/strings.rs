@@ -2,38 +2,35 @@ use super::Obfuscator;
 use super::Result;
 use super::Shiftable;
 use crate::obfuscator::error::ObfuscatorError;
+use std::ops::Range;
 use tree_sitter::{Tree, TreeCursor};
+
+type RangeVec = Vec<Range<usize>>;
 
 #[derive(Debug)]
 struct StringRange {
+    string_start_skip: usize,
+    string_end_skip: usize,
     range: std::ops::Range<usize>,
-    escapes: Vec<std::ops::Range<usize>>,
+    escapes: RangeVec,
 }
 
 fn string_encode(sr: &StringRange, s: &str) -> String {
-    let mut new = String::with_capacity(s.len() - 2);
+    let mut new = String::with_capacity(s.len() * 3);
 
-    for (i, c) in s.char_indices() {
-        if i == 0 || i == s.len() - 1 {
-            continue;
-        }
-        if {
-            let mut ctn = false;
-            for esc in &sr.escapes {
-                if esc.contains(&i) {
-                    ctn = true;
-                    break;
-                }
+    'outer: for (i, c) in s.char_indices() {
+        for esc in &sr.escapes {
+            if esc.contains(&(i + sr.range.start + sr.string_start_skip)) {
+                eprintln!(
+                    "esci = {:?}, {} , c= {c}",
+                    esc,
+                    (i + sr.range.start + sr.string_start_skip)
+                );
+                new.push(c);
+                continue 'outer;
             }
-            ctn
         }
-        {
-            new.push(c);
-            continue;
-        }
-        eprint!("from {c}, {} ", c as u32);
         let new_letter = format!("\\x{:x}", c as u32);
-        eprintln!("to {new_letter}");
         new.push_str(&new_letter);
     }
     new
@@ -42,19 +39,34 @@ fn string_encode(sr: &StringRange, s: &str) -> String {
 fn get_strings(tree: &Tree) -> Vec<StringRange> {
     let mut v = vec![];
     fn go(cursor: &mut TreeCursor, vec: &mut Vec<StringRange>) {
-        fn get_escapes(node: &tree_sitter::Node) -> Vec<std::ops::Range<usize>> {
+        fn get_node_within_siblings(node: &tree_sitter::Node, nodetype: &str) -> RangeVec {
             let mut vec = vec![];
             let mut cursor = node.walk();
             if !cursor.goto_first_child() {
                 return vec;
             }
-            while cursor.goto_next_sibling() {
+            loop {
                 let node = cursor.node();
                 let node_type = node.kind();
-                if node_type == "escape_sequence" {
+
+                if node_type == nodetype {
+                    eprintln!("get escapes node type {node_type}");
                     vec.push(node.byte_range());
                 }
-                cursor.goto_next_sibling();
+                if !cursor.goto_next_sibling() {
+                    break;
+                }
+            }
+            vec
+        }
+
+        fn get_escapes(node: &tree_sitter::Node) -> RangeVec {
+            let mut vec = get_node_within_siblings(node, "interpolation");
+
+            for node in node.children(&mut node.walk()) {
+                if node.kind() == "string_content" {
+                    vec.append(&mut get_node_within_siblings(&node, "escape_sequence"));
+                }
             }
             vec
         }
@@ -64,6 +76,8 @@ fn get_strings(tree: &Tree) -> Vec<StringRange> {
 
         if node_type == "string" {
             vec.push(StringRange {
+                string_end_skip: get_node_within_siblings(&node, "string_end")[0].len(),
+                string_start_skip: get_node_within_siblings(&node, "string_start")[0].len(),
                 range: node.byte_range(),
                 escapes: get_escapes(&node),
             })
@@ -95,11 +109,12 @@ impl Obfuscator {
             let mut shift = 0;
             for e in strings {
                 eprintln!("loop string");
-                let str = &self.code[e.range.clone()];
+                let str = &self.code
+                    [e.range.start + e.string_start_skip..e.range.end - e.string_end_skip];
                 eprintln!("string = {str}");
                 dbg!(&e);
 
-                let formated = format!("string_decode(\"{}\")", string_encode(&e, str));
+                let formated = format!("string_decode(f\"{}\")", string_encode(&e, str));
                 eprintln!("encoded {}", formated);
 
                 let len = e.range.len();
