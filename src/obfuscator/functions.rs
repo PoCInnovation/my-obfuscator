@@ -66,7 +66,7 @@ fn replace_fn(tree: &mut Tree, code: &str, replace: &str, replacement: &str) -> 
 
 impl Obfuscator {
     pub fn obfuscate_functions(&mut self) -> Result<()> {
-        let _ = self.reparse(ObfuscatorError::Booleans);
+        self.reparse(ObfuscatorError::Booleans)?;
         let fns = get_fn(&self.tree, &self.code);
         for e in &fns {
             self.code = replace_fn(&mut self.tree, &self.code, e, &rand_str());

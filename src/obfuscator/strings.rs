@@ -21,11 +21,6 @@ fn string_encode(sr: &StringRange, s: &str) -> String {
     'outer: for (i, c) in s.char_indices() {
         for esc in &sr.escapes {
             if esc.contains(&(i + sr.range.start + sr.string_start_skip)) {
-                eprintln!(
-                    "esci = {:?}, {} , c= {c}",
-                    esc,
-                    (i + sr.range.start + sr.string_start_skip)
-                );
                 new.push(c);
                 continue 'outer;
             }
@@ -50,7 +45,6 @@ fn get_strings(tree: &Tree) -> Vec<StringRange> {
                 let node_type = node.kind();
 
                 if node_type == nodetype {
-                    eprintln!("get escapes node type {node_type}");
                     vec.push(node.byte_range());
                 }
                 if !cursor.goto_next_sibling() {
@@ -98,29 +92,19 @@ fn get_strings(tree: &Tree) -> Vec<StringRange> {
 impl Obfuscator {
     pub fn obfuscate_strings(&mut self) -> Result<()> {
         // strings
-        eprintln!("strings");
         self.code = {
             let strings = get_strings(&self.tree);
-            dbg!(&strings);
-            for e in &strings {
-                eprintln!("string = {}", &self.code[e.range.clone()]);
-            }
             let mut code = self.code.clone();
             let mut shift = 0;
             for e in strings {
-                eprintln!("loop string");
                 let str = &self.code
                     [e.range.start + e.string_start_skip..e.range.end - e.string_end_skip];
-                eprintln!("string = {str}");
-                dbg!(&e);
 
                 let formated = format!("string_decode(f\"{}\")", string_encode(&e, str));
-                eprintln!("encoded {}", formated);
 
                 let len = e.range.len();
                 let range = e.range.shift(shift);
                 code.replace_range(range, &formated);
-                eprintln!("old len = {}, new len = {}", len, formated.len());
                 shift += formated.len() as i32 - len as i32;
             }
             code
