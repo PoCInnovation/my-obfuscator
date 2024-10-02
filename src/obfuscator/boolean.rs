@@ -45,8 +45,8 @@ fn random_args() -> String {
 
 fn obfuctated_boolean(val: &str) -> String {
     let val = match val {
-        "True" => format!("thruthy({})", random_args()),
-        "False" => format!("falsy({})", random_args()),
+        "True" => format!("ohe_thruthy({})", random_args()),
+        "False" => format!("ohe_falsy({})", random_args()),
         _ => unreachable!("boolean obfuscation failing most likely due to unparsed tree"),
     };
     format!(
