@@ -1,6 +1,4 @@
-use std::fmt::format;
 use std::ops::Range;
-
 use super::error::ObfuscatorError;
 use super::error::Result;
 use super::random_identifiers::rand_str;
