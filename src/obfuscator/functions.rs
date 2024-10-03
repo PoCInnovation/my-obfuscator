@@ -93,7 +93,7 @@ fn hide_call(obfuscator: &Obfuscator, call: Range<usize>) -> String {
         return old_call.to_owned();
     }
     eprintln!("oldcall = {old_call}");
-    let new_call = format!("call_the_function('{old_call}')");
+    let new_call = format!("ohe_call_function('{old_call}')");
 
     new_call
 }
@@ -111,12 +111,17 @@ impl Obfuscator {
     pub fn obfuscate_function_calls(&mut self) -> Result<()> {
         let mut shift = 0;
         let calls = get_fn_calls(&self.tree);
-        for call in &calls {
+        for (i, call) in calls.iter().enumerate() {
+            eprintln!("i = {i}");
+            if i < 30 || calls[i - 1].end > call.start {
+                continue;
+            }
             let call = call.shift(shift);
             let len = call.len();
+
             let hidden = hide_call(self, call.clone());
+
             shift += hidden.len() as i32 - len as i32;
-            println!("lendiff = {}", hidden.len() as i32 - len as i32);
             self.code.replace_range(call, &hidden);
         }
         Ok(())

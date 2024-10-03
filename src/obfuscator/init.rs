@@ -12,19 +12,6 @@ def ohe_string_decode(string):
             string[i] = chr(ord(string[i]) - 1)
     return ''.join(string)
 
-import sys
-if (gettrace := getattr(sys, 'gettrace')) and gettrace() or 'pdb' in sys.modules or 'debugpy' in sys.modules or 'pydevd' in sys.modules or 'ptvsd' in sys.modules or 'wdb' in sys.modules:
-    import os;os._exit(0)
-
-def ohe_useless(*args, **kwargs):
-    return
-
-def ohe_thruthy(*args, **kwargs):
-    return ohe_useless(args, kwargs) or 1 == int(float("01.0342671"))
-
-def ohe_falsy(*args, **kwargs):
-    return ohe_thruthy(args, value="awae", iteration=2) and str(2) == "the_number_two"
-
 def ohe_call_function(function_call_string):
     import re, ast, builtins
     match = re.match(r'(\w+)\((.*)\)$', function_call_string)
@@ -53,6 +40,20 @@ def ohe_call_function(function_call_string):
         return ohe()
 
     return ohe_fun(*args, **kwargs)
+
+import sys
+if (gettrace := getattr(sys, 'gettrace')) and gettrace() or 'pdb' in sys.modules or 'debugpy' in sys.modules or 'pydevd' in sys.modules or 'ptvsd' in sys.modules or 'wdb' in sys.modules:
+    import os;os._exit(0)
+
+def ohe_useless(*args, **kwargs):
+    return
+
+def ohe_thruthy(*args, **kwargs):
+    return ohe_useless(args, kwargs) or 1 == int(float("01.0342671"))
+
+def ohe_falsy(*args, **kwargs):
+    return ohe_thruthy(args, value="awae", iteration=2) and str(2) == "the_number_two"
+
 
 
 "#;
