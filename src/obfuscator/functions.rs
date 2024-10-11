@@ -1,9 +1,9 @@
-use std::ops::Range;
 use super::error::ObfuscatorError;
 use super::error::Result;
 use super::random_identifiers::rand_str;
 use super::Obfuscator;
 use super::Shiftable;
+use std::ops::Range;
 use tree_sitter::{Tree, TreeCursor};
 
 fn get_fn(tree: &Tree, code: &str) -> Vec<String> {
@@ -92,8 +92,7 @@ fn hide_call(obfuscator: &Obfuscator, call: Range<usize>) -> String {
     if old_call.starts_with("ohe") || old_call.starts_with("eval") {
         return old_call.to_owned();
     }
-    eprintln!("oldcall = {old_call}");
-    let new_call = format!("ohe_call_function('{old_call}')");
+    let new_call = format!("ohe_call_function(r'''{old_call}''')");
 
     new_call
 }
@@ -111,10 +110,11 @@ impl Obfuscator {
     pub fn obfuscate_function_calls(&mut self) -> Result<()> {
         let mut shift = 0;
         let calls = get_fn_calls(&self.tree);
-        for (i, call) in calls.iter().enumerate() {
-            eprintln!("i = {i}");
-            if i < 30 || calls[i - 1].end > call.start {
-                continue;
+        'outer: for (i, call) in calls.iter().enumerate() {
+            for cn in calls.iter().take(i) {
+                if cn.end > call.start {
+                    continue 'outer;
+                }
             }
             let call = call.shift(shift);
             let len = call.len();
@@ -123,6 +123,7 @@ impl Obfuscator {
 
             shift += hidden.len() as i32 - len as i32;
             self.code.replace_range(call, &hidden);
+            self.reparse(ObfuscatorError::Functions("call replace lead to syntactical error".to_string()))?;
         }
         Ok(())
     }

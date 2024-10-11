@@ -33,7 +33,11 @@ fn run_obfuscator(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator
         obfuscator.obfuscate_function_calls()?;
     }
     if run_all || set_options.contains(&&"fn".to_string()) {
-        obfuscator.obfuscate_functions()?;
+        if set_options.contains(&&"call".to_string()) {
+            eprintln!("fn identifier obfuscation was skipped because it is not compatible with call obfuscation");
+        } else {
+            obfuscator.obfuscate_functions()?;
+        }
     }
     if run_all || set_options.contains(&&"int".to_string()) {
         obfuscator.obfuscate_integers()?;

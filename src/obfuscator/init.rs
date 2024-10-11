@@ -11,14 +11,16 @@ def ohe_string_decode(string):
         if ord(string[i]) >= 35 and ord(string[i]) <= 125 and 0:
             string[i] = chr(ord(string[i]) - 1)
     return ''.join(string)
-
 def ohe_call_function(function_call_string):
+    ohe = lambda: eval(function_call_string, globals(), locals())
+    try:
+        return ohe()
+    except:
+        pass
     import re, ast, builtins
     match = re.match(r'(\w+)\((.*)\)$', function_call_string)
-    ohe = lambda: eval(function_call_string, globals(), locals())
     if not match:
         return ohe()
-
     func_name, args_string = match.groups()
     args = []
     kwargs = {}
@@ -29,33 +31,22 @@ def ohe_call_function(function_call_string):
             kwargs = {kw.arg: ast.literal_eval(kw.value) for kw in parsed if isinstance(kw, ast.keyword)}
         except (SyntaxError, ValueError):
             raise ValueError("Invalid arguments in function call string")
-
     if func_name in dir(builtins):
         ohe_fun = getattr(builtins, func_name)
     else:
         ohe_fun = globals().get(func_name)
-
-
     if ohe_fun is None:
         return ohe()
-
     return ohe_fun(*args, **kwargs)
-
 import sys
 if (gettrace := getattr(sys, 'gettrace')) and gettrace() or 'pdb' in sys.modules or 'debugpy' in sys.modules or 'pydevd' in sys.modules or 'ptvsd' in sys.modules or 'wdb' in sys.modules:
     import os;os._exit(0)
-
 def ohe_useless(*args, **kwargs):
     return
-
 def ohe_thruthy(*args, **kwargs):
     return ohe_useless(args, kwargs) or 1 == int(float("01.0342671"))
-
 def ohe_falsy(*args, **kwargs):
     return ohe_thruthy(args, value="awae", iteration=2) and str(2) == "the_number_two"
-
-
-
 "#;
 
 impl Obfuscator {
