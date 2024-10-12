@@ -10,7 +10,7 @@ def ohe_string_decode(string):
     for i in range(len(string)):
         if ord(string[i]) >= 35 and ord(string[i]) <= 125 and 0:
             string[i] = chr(ord(string[i]) - 1)
-    return ''.join(string)
+    return "".join(string)
 def ohe_call_function(function_call_string):
     ohe = lambda: eval(function_call_string, globals(), locals())
     try:

@@ -109,9 +109,9 @@ impl Obfuscator {
 
     pub fn obfuscate_function_calls(&mut self) -> Result<()> {
         let mut shift = 0;
-        let calls = get_fn_calls(&self.tree);
-        'outer: for (i, call) in calls.iter().enumerate() {
-            for cn in calls.iter().take(i) {
+        let calls = get_fn_calls(&self.tree).into_iter().skip(7);
+        'outer: for (i, call) in calls.clone().enumerate() {
+            for cn in calls.clone().take(i) {
                 if cn.end > call.start {
                     continue 'outer;
                 }
@@ -123,7 +123,9 @@ impl Obfuscator {
 
             shift += hidden.len() as i32 - len as i32;
             self.code.replace_range(call, &hidden);
-            self.reparse(ObfuscatorError::Functions("call replace lead to syntactical error".to_string()))?;
+            self.reparse(ObfuscatorError::Functions(
+                "call replace lead to syntactical error".to_string(),
+            ))?;
         }
         Ok(())
     }

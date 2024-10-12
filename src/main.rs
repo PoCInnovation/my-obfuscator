@@ -29,15 +29,15 @@ fn run_obfuscator(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator
     if run_all || set_options.contains(&&"string".to_string()) {
         obfuscator.obfuscate_strings()?;
     }
-    if run_all || set_options.contains(&&"call".to_string()) {
-        obfuscator.obfuscate_function_calls()?;
-    }
     if run_all || set_options.contains(&&"fn".to_string()) {
         if set_options.contains(&&"call".to_string()) {
             eprintln!("fn identifier obfuscation was skipped because it is not compatible with call obfuscation");
         } else {
             obfuscator.obfuscate_functions()?;
         }
+    }
+    if set_options.contains(&&"call".to_string()) {
+        obfuscator.obfuscate_function_calls()?;
     }
     if run_all || set_options.contains(&&"int".to_string()) {
         obfuscator.obfuscate_integers()?;
@@ -54,13 +54,13 @@ fn run_obfuscation(code: String, matches: ArgMatches) -> ExitCode {
     let obfuscator = match Obfuscator::new(code) {
         Ok(ob) => ob,
         Err(err) => {
-            println!("{err}");
+            eprintln!("{err}");
             return ExitCode::SUCCESS;
         }
     };
 
     if let Err(err) = run_obfuscator(obfuscator, matches) {
-        println!("{err}");
+        eprintln!("{err}");
         ExitCode::FAILURE
     } else {
         ExitCode::SUCCESS
