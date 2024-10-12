@@ -4,7 +4,8 @@ use std::process::ExitCode;
 use clap::{arg, value_parser, ArgAction, ArgMatches, Command, ValueHint};
 
 use obfuscator::Obfuscator;
-const AVAILABLE_OBFUSCATION_METHODS: [&str; 6] = ["int", "string", "fn", "bools", "dead", "rm_cmt"];
+const AVAILABLE_OBFUSCATION_METHODS: [&str; 7] =
+    ["int", "string", "fn", "bools", "dead", "rm_cmt", "call"];
 
 fn run_obfuscator(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator::Result<()> {
     let run_all = !matches.contains_id("set");
@@ -29,7 +30,14 @@ fn run_obfuscator(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator
         obfuscator.obfuscate_strings()?;
     }
     if run_all || set_options.contains(&&"fn".to_string()) {
-        obfuscator.obfuscate_functions()?;
+        if set_options.contains(&&"call".to_string()) {
+            eprintln!("fn identifier obfuscation was skipped because it is not compatible with call obfuscation");
+        } else {
+            obfuscator.obfuscate_functions()?;
+        }
+    }
+    if set_options.contains(&&"call".to_string()) {
+        obfuscator.obfuscate_function_calls()?;
     }
     if run_all || set_options.contains(&&"int".to_string()) {
         obfuscator.obfuscate_integers()?;
@@ -46,13 +54,13 @@ fn run_obfuscation(code: String, matches: ArgMatches) -> ExitCode {
     let obfuscator = match Obfuscator::new(code) {
         Ok(ob) => ob,
         Err(err) => {
-            println!("{err}");
+            eprintln!("{err}");
             return ExitCode::SUCCESS;
         }
     };
 
     if let Err(err) = run_obfuscator(obfuscator, matches) {
-        println!("{err}");
+        eprintln!("{err}");
         ExitCode::FAILURE
     } else {
         ExitCode::SUCCESS

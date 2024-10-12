@@ -42,8 +42,11 @@ fn insert_dead_branches(code: &str, attempt: usize) -> String {
     let iterations = rng.gen_range(1..(lines / 3) - attempt);
     let mut new_code: String = code.to_string();
 
+    assert!(iterations > 0);
     for _ in 0..iterations {
-        let line = rng.gen_range(init::OBFUSCATOR_HELPER_FUNCTIONS.lines().count()..lines);
+        let line_range = init::OBFUSCATOR_HELPER_FUNCTIONS.lines().count()..lines;
+        assert!(!line_range.is_empty());
+        let line = rng.gen_range(line_range);
 
         new_code = new_code
             .lines()

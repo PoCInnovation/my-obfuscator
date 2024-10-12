@@ -100,7 +100,7 @@ impl Obfuscator {
                 let str = &self.code
                     [e.range.start + e.string_start_skip..e.range.end - e.string_end_skip];
 
-                let formated = format!("string_decode(f\"{}\")", string_encode(&e, str));
+                let formated = format!("ohe_string_decode(f\"{}\")", string_encode(&e, str));
 
                 let len = e.range.len();
                 let range = e.range.shift(shift);
