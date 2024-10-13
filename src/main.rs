@@ -26,6 +26,9 @@ fn run_obfuscator(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator
     if run_all || set_options.contains(&&"bools".to_string()) {
         obfuscator.obfuscate_booleans()?;
     }
+    if set_options.contains(&&"call".to_string()) {
+        obfuscator.obfuscate_function_calls()?;
+    }
     if run_all || set_options.contains(&&"string".to_string()) {
         obfuscator.obfuscate_strings()?;
     }
@@ -35,9 +38,6 @@ fn run_obfuscator(mut obfuscator: Obfuscator, matches: ArgMatches) -> obfuscator
         } else {
             obfuscator.obfuscate_functions()?;
         }
-    }
-    if set_options.contains(&&"call".to_string()) {
-        obfuscator.obfuscate_function_calls()?;
     }
     if run_all || set_options.contains(&&"int".to_string()) {
         obfuscator.obfuscate_integers()?;
