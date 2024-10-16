@@ -1,18 +1,16 @@
 > If you see this section, you've just created a repository using [PoC Innovation's Open-Source project template](https://github.com/PoCInnovation/open-source-project-template). Check the [getting started guide](./.github/getting-started.md).
 
-# [PROJECT'S NAME]
+# my-obfuscator
 
-[Project's description]
+A python obfucator written in rust using tree-sitter and tree-sitter-python
 
 ## How does it work?
 
-[Explain how this project is working]
+The obfucation methods used aim at obfucating the code in-place rather than having some sort of exec block doing all the work
 
 ## Getting Started
 
 ### Installation
-
-[Explain how to install all of the project's dependencies]
 
 Install the Rust programming language (see instructions at <https://rustup.rs>).
 
@@ -21,20 +19,23 @@ Install the Rust programming language (see instructions at <https://rustup.rs>).
 Clone the repo, and launch the following command:
 
 ```bash
-cargo run -- arguments
+cargo run -- -h
 ```
-
-[Explain how to run this project]
 
 ### Usage
 
-To run tests, launch the following command:
-
 ```bash
-cargo test
+cargo run -- <PYTHON_SCRIPT_PATH> [OPTIONS]
 ```
-
-[Explain how to use this project]
+You may use ``` -s int string fn bools dead rm_cmt call ```
+with each one being an optional obfuscation.
+int will do the oposite of constant folding for integers
+string will replace each character with an hexadecimal escape sequence
+fn will change the name of the function as well as their calls to random identifiers
+bools will attempt to hide the use of boolean values through a few means
+dead will insert unreachable code through branching
+rm_cmt will remove comments and empty lines
+call will hide function calls using eval, it is off by default as it conflicts with fn and it is more expensive, the two could be made compatible but it is unlikely to actually be done now.
 
 ## Get involved
 
